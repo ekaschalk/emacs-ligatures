@@ -3,7 +3,8 @@
 (defconst lig--font-lock-kwds
   (list
    (rx "hello")
-   '(0 font-lock-constant-face)))
+   '(0 font-lock-constant-face)
+   ))
 
 (setq lig-font-lock-kwds
       (list lig--font-lock-kwds))
@@ -23,13 +24,25 @@
 
 (defun lig-syntax-propertize-function (start end)
   (save-excursion
-    (goto-char start)
+    (goto-char (point-min))
 
     (while (lig--match-lig end)
-      (compose-region (match-beginning 0)
-                      (match-end 0)
-                      #xe907)
+      (compose-region (match-beginning 0) (match-end 0)
+                      #xe907
+                      )
+      (save-excursion
+        (forward-line)
+        (compose-region (point) (1+ (point))
+                        '(?\s (Br . Bl) ?\s)
+                        ))
 
+      ;; '(?\s (Br . Bl) ?\s)
+      ;; '(?\s (Br . Bl) ?\s
+      ;;       (Br . Bl) ?\s
+      ;;       (Br . Bl) ?\s
+      ;;       (Br . Bl) ?\s
+      ;;       (Br . Bl) ?\s)
+      ;; (prettify-utils-generate (" " "  "))
       )))
 
 (provide 'lig-mode)
