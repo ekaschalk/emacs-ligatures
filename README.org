@@ -1,0 +1,1 @@
+Trying to solve indentation issues occurring with use of ligatures in Emacs.
