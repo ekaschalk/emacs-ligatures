@@ -1,16 +1,16 @@
 (add-to-list 'auto-mode-alist '("\\.lig\\'" . lig-mode))
 
-(defconst lig--font-lock-kwds
-  (list
-   (rx "hello")
-   '(0 font-lock-constant-face)
-   ))
+;; (defconst lig--font-lock-kwds
+;;   (list
+;;    (rx "hello")
+;;    '(0 font-lock-constant-face)
+;;    ))
 
-(setq lig-font-lock-kwds
-      (list lig--font-lock-kwds))
+;; (setq lig-font-lock-kwds
+;;       (list lig--font-lock-kwds))
 
 (define-derived-mode lig-mode fundamental-mode "Lig"
-  (setq font-lock-defaults '(lig-font-lock-kwds))
+  ;; (setq font-lock-defaults '(lig-font-lock-kwds))
   (setq-local indent-line-function 'lisp-indent-line)
   (setq-local syntax-propertize-function 'lig-syntax-propertize-function))
 
@@ -32,9 +32,19 @@
                       )
       (save-excursion
         (forward-line)
-        (compose-region (point) (1+ (point))
-                        '(?\s (Br . Bl) ?\s)
-                        ))
+        (unless (text-property-any (point) (1+ (point))
+                                   'bigger t)
+
+          (compose-region (point) (1+ (point))
+                          '(?\s (Br . Bl) ?\s))
+          )
+
+        (put-text-property (point) (1+ (point))
+                           'bigger t)
+
+        ;; `text-property-any'
+        ;; `text-properties-at'
+        )
 
       ;; '(?\s (Br . Bl) ?\s)
       ;; '(?\s (Br . Bl) ?\s
