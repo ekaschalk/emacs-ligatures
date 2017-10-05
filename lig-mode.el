@@ -6,10 +6,19 @@
 
 (define-derived-mode lig-mode fundamental-mode "Lig"
   (setq-local indent-line-function 'lisp-indent-line)
-  (setq-local syntax-propertize-function 'lig-syntax-propertize-function))
+  ;; (setq-local syntax-propertize-function 'lig-syntax-propertize-function)
+  (setq-local syntax-propertize-function nil)
+  )
 
 (defun lig--match-lig (limit)
   (re-search-forward (rx word-start "hello" word-end) limit t))
+
+;;;; Overlay management
+
+(defun lig-mod-hook (overlay post-mod? start end &optional _)
+  (when post-mod?
+    (overlay-put overlay 'display nil)
+    (overlay-put overlay 'modification-hooks nil)))
 
 ;;;; Indents
 
@@ -32,13 +41,6 @@
 
   (- uncomposed-indent composed-indent))
 
-;;;; Overlay management
-
-(defun lig-mod-hook (overlay post-mod? start end &optional _)
-  (when post-mod?
-    (overlay-put overlay 'display nil)
-    (overlay-put overlay 'modification-hooks nil)))
-
 ;;;; Syntax propertize
 
 (defun lig-syntax-propertize-function (start-limit end-limit)
@@ -60,9 +62,39 @@
           (while (> (lig-diff-in-indent start end num-lines) 0)
             (forward-line num-lines)
             (put-text-property (point) (+ 3 (point)) 'invisible t)
-            ;; (compose-region (point) (+ 4 (point)) ?\s)
+            (compose-region (point) (+ 4 (point)) ?\s)
 
             (setq num-lines (1+ num-lines))
           ))))))
+
+(defvar lig-diff-indents nil)
+
+(defun lig-get-diff-indents ()
+  (setq lig-diff-indents nil)
+  (save-excursion
+    (goto-char (point-min))
+
+    (while (re-search-forward (rx word-start "hello" word-end) nil t)
+      (compose-region (match-beginning 0) (match-end 0) #xe907))
+
+    (indent-region (point-min) (point-max))
+
+    (goto-char (point-min))
+
+    (setq i 1)
+    (while (< (point) (point-max))
+      (push (cons i (current-indentation))
+            lig-diff-indents)
+      (forward-line)
+      (setq i (1+ i)))))
+
+(defun test ()
+  (let ((true-buffer (current-buffer)))
+    (with-temp-buffer
+      (insert-buffer-substring true-buffer)
+      (lig-get-diff-indents)
+      lig-diff-indents
+      )))
+
 
 (provide 'lig-mode)
