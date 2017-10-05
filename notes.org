@@ -1,0 +1,31 @@
+* Thoughts
+
+what if I maintained two separate buffers
+one with the composed indentation and the other with the true indentation
+the true buffer uses this overlay display trick
+the fake buffer uses compose region instead
+and we keep track of the indentation differences at each line
+and then use the spacing trick on all lines with different indentation
+
+"indirect buffers can have different major modes, overlays, markers"
+
+Create a blank mode that only takes indentation from parent mode
+create indirect buffer and set to this blank mode
+since it is an indirect buffer, they share text naturally
+
+since I cant make a separate overlay for compose
+I could instead make an invisible overlay mirroring the lig-overlay
+
+note can use evaporate property to nil the overlay automatically
+
+note look at after-string and before-string properties for overlay
+https://www.gnu.org/software/emacs/manual/html_node/elisp/Overlay-Properties.html#Overlay-Properties
+
+
+* Scratch code
+
+`text-property-any'
+`text-properties-at'
+'(?\s (Br . Bl) ?\s)
+'(?\s (Br . Bl) ?\s (Br . Bl) ?\s)
+(prettify-utils-generate (" " "  "))
