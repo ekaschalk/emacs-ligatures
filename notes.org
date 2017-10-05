@@ -29,3 +29,16 @@ https://www.gnu.org/software/emacs/manual/html_node/elisp/Overlay-Properties.htm
 '(?\s (Br . Bl) ?\s)
 '(?\s (Br . Bl) ?\s (Br . Bl) ?\s)
 (prettify-utils-generate (" " "  "))
+
+    ;; ;; add spacing overlays
+    ;; (setq cur-line 1)
+
+
+    ;; (save-excursion
+    ;;   (while (> (lig-diff-in-indent start end num-lines) 0)
+    ;;     (forward-line num-lines)
+    ;;     (put-text-property (point) (+ 3 (point)) 'invisible t)
+    ;;     ;; (compose-region (point) (+ 4 (point)) ?\s)
+
+    ;;     (setq num-lines (1+ num-lines))
+    ;;     ))))

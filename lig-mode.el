@@ -51,21 +51,33 @@
       (let ((start (match-beginning 0))
             (end (match-end 0)))
 
+        ;; Create and set the lig overlays
         (unless (-contains? (overlays-at start) lig-overlay)
           (setq lig-overlay (make-overlay start end))
           (overlay-put lig-overlay 'display "")
           (overlay-put lig-overlay 'evaporate t)
-          (overlay-put lig-overlay 'modification-hooks '(lig-mod-hook)))
+          (overlay-put lig-overlay 'modification-hooks '(lig-mod-hook)))))
 
-        (setq num-lines 1)
-        (save-excursion
-          (while (> (lig-diff-in-indent start end num-lines) 0)
-            (forward-line num-lines)
-            (put-text-property (point) (+ 3 (point)) 'invisible t)
-            (compose-region (point) (+ 4 (point)) ?\s)
+    ;; remove spacing overlays
+    (remove-overlays nil nil "invis-spaces" t)
 
-            (setq num-lines (1+ num-lines))
-          ))))))
+    ;; add spacing overlays
+    (goto-char (point-min))
+    (setq line 1)
+    (while (< (point) (point-max))
+      (let* ((vis-indent (alist-get line lig-diff-indents))
+             (num-spaces (1+ (- (current-indentation)
+                                vis-indent)))
+             (start (point))
+             (end (+ num-spaces (point))))
+
+        (setq space-overlay (make-overlay start end))
+        (overlay-put space-overlay 'invis-spaces t)
+        (overlay-put space-overlay 'invisible t)
+        (overlay-put space-overlay 'evaporate t)
+
+        (setq line (1+ line))))))
+
 
 (defvar lig-diff-indents nil)
 
