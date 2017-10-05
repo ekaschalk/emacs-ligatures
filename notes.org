@@ -42,3 +42,37 @@ https://www.gnu.org/software/emacs/manual/html_node/elisp/Overlay-Properties.htm
 
     ;;     (setq num-lines (1+ num-lines))
     ;;     ))))
+
+
+ Indents
+
+(defun lig-diff-in-indent (start end num-lines)
+  (compose-region start end "")
+
+  (save-excursion
+    (dotimes (i num-lines)
+      (forward-line)
+      (funcall (symbol-value 'indent-line-function))
+      (setq composed-indent (current-indentation))))
+
+  (decompose-region start end)
+
+  (save-excursion
+    (dotimes (i num-lines)
+      (forward-line)
+      (funcall (symbol-value 'indent-line-function))
+      (setq uncomposed-indent (current-indentation))))
+
+  (- uncomposed-indent composed-indent))
+
+
+
+(hello how
+       are
+       you (ok hello
+               hi))
+
+(hello how
+       are
+       ok (hello ok
+                 again))
